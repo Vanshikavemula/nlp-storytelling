@@ -32,7 +32,7 @@
         </div>
 
         <!-- SIGNUP PANEL -->
-        <div id="signup-panel" class="auth-panel hidden">
+        <!-- <div id="signup-panel" class="auth-panel hidden">
           <label class="field-label">Create Username</label>
           <input id="signup-username" class="field-input" type="text" placeholder="Choose a username" />
 
@@ -43,12 +43,49 @@
           <p class="auth-hint">After signing up, switch to Login tab and log in.</p>
         </div>
       </div>
-    </div>
+    </div> -->
+
+        <div id="signup-panel" class="auth-panel hidden">
+
+        <label class="field-label">Username *</label>
+        <input id="signup-username" class="field-input" placeholder="Enter your username" type="text" required>
+
+        <label class="field-label">First Name *</label>
+        <input id="signup-firstname" class="field-input" placeholder="Enter your first name" type="text" required>
+
+        <label class="field-label">Middle Name</label>
+        <input id="signup-middlename" class="field-input" placeholder="Enter your middle name" type="text">
+
+        <label class="field-label">Last Name *</label>
+        <input id="signup-lastname" class="field-input" placeholder="Enter your last name" type="text" required>
+
+        <label class="field-label">Email *</label>
+        <input id="signup-email" class="field-input" type="email" placeholder="example@mail.com" required>
+
+        <label class="field-label">Phone Number *</label>
+        <input id="signup-phone" class="field-input" type="text" placeholder="10-digit number" required>
+
+        <label class="field-label">New Password *</label>
+        <input id="signup-password" class="field-input" placeholder="Enter your password" type="password" required>
+
+        <!-- Password Strength Indicator -->
+        <div id="password-strength" class="password-strength">
+            <div id="ps-bar"></div>
+        </div>
+
+        <label class="field-label">Confirm Password *</label>
+        <input id="signup-confirm-password" class="field-input" placeholder="Confirm your password" type="password" required>
+
+        <p id="signup-error" class="auth-error hidden"></p>
+
+        <button id="signup-btn" class="primary-btn full">Sign Up</button>
+        </div>
+
 
     <!-- MAIN APP -->
     <div id="app-container" class="app-container hidden">
       <!-- Top Bar -->
-      <header id="main-header" class="top-bar">
+      <header class="top-bar">
         <div>
           <h1 class="app-title">Story Annotators Dashboard</h1>
           <p class="app-subtitle">Welcome, <span id="welcome-user">User</span></p>

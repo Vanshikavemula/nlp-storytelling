@@ -505,92 +505,174 @@ document.addEventListener("click", () => {
 
   /* ------------ AUTH LOGIC ------------ */
 
-  function switchToLoginTab() {
+    /* ------------ AUTH LOGIC (REWRITTEN CLEANLY) ------------ */
+
+    // SIGNUP INPUTS
+    const suUser = document.getElementById("signup-username");
+    const suFirst = document.getElementById("signup-firstname");
+    const suMiddle = document.getElementById("signup-middlename");
+    const suLast = document.getElementById("signup-lastname");
+    const suEmail = document.getElementById("signup-email");
+    const suPhone = document.getElementById("signup-phone");
+    const suPass = document.getElementById("signup-password");
+    const suCPass = document.getElementById("signup-confirm-password");
+    const psBar = document.getElementById("ps-bar");
+    const signupError = document.getElementById("signup-error");
+
+    // LOGIN INPUTS
+    const loginUser = loginUsername;
+    const loginPass = loginPassword;
+
+    // SWITCH TABS
+    function switchToLoginTab() {
     tabLogin.classList.add("active");
     tabSignup.classList.remove("active");
     showElement(loginPanel);
     hideElement(signupPanel);
-  }
+    }
 
-  function switchToSignupTab() {
+    function switchToSignupTab() {
     tabSignup.classList.add("active");
     tabLogin.classList.remove("active");
     showElement(signupPanel);
     hideElement(loginPanel);
-  }
-
-  tabLogin.addEventListener("click", switchToLoginTab);
-  tabSignup.addEventListener("click", switchToSignupTab);
-
-  signupBtn.addEventListener("click", () => {
-    const username = signupUsername.value.trim();
-    const password = signupPassword.value;
-
-    if (!username || !password) {
-      alert("Please enter username and password.");
-      return;
     }
 
-    const user = { username, password };
-    localStorage.setItem("sas_user", JSON.stringify(user));
-    alert("Sign-up successful! Now login with your credentials.");
-    switchToLoginTab();
-  });
+    tabLogin.addEventListener("click", switchToLoginTab);
+    tabSignup.addEventListener("click", switchToSignupTab);
 
-  loginBtn.addEventListener("click", () => {
-    const username = loginUsername.value.trim();
-    const password = loginPassword.value;
+    // VALIDATORS
+    function validEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    }
+
+    function validPhone(num) {
+    return /^[0-9]{10}$/.test(num);
+    }
+
+    // PASSWORD STRENGTH METER
+    suPass.addEventListener("input", () => {
+    const pass = suPass.value;
+    let score = 0;
+
+    if (pass.length >= 8) score++;
+    if (/[A-Z]/.test(pass)) score++;
+    if (/[a-z]/.test(pass)) score++;
+    if (/[0-9]/.test(pass)) score++;
+    if (/[^A-Za-z0-9]/.test(pass)) score++;
+
+    psBar.style.width = (score * 20) + "%";
+
+    if (score <= 2) psBar.style.background = "red";
+    else if (score === 3) psBar.style.background = "orange";
+    else if (score === 4) psBar.style.background = "yellowgreen";
+    else psBar.style.background = "green";
+    });
+
+    // SIGN UP
+    signupBtn.addEventListener("click", () => {
+    signupError.classList.add("hidden");
+
+    if (
+        !suUser.value ||
+        !suFirst.value ||
+        !suLast.value ||
+        !suEmail.value ||
+        !suPhone.value ||
+        !suPass.value ||
+        !suCPass.value
+    ) {
+        signupError.textContent = "All required fields must be filled.";
+        signupError.classList.remove("hidden");
+        return;
+    }
+
+    if (!validEmail(suEmail.value)) {
+        signupError.textContent = "Invalid email format.";
+        signupError.classList.remove("hidden");
+        return;
+    }
+
+    if (!validPhone(suPhone.value)) {
+        signupError.textContent = "Phone number must be 10 digits.";
+        signupError.classList.remove("hidden");
+        return;
+    }
+
+    if (suPass.value !== suCPass.value) {
+        signupError.textContent = "Passwords do not match.";
+        signupError.classList.remove("hidden");
+        return;
+    }
+
+    const newUser = {
+        username: suUser.value.trim(),
+        firstname: suFirst.value.trim(),
+        middlename: suMiddle.value.trim(),
+        lastname: suLast.value.trim(),
+        email: suEmail.value.trim(),
+        phone: suPhone.value.trim(),
+        password: suPass.value,
+    };
+
+    localStorage.setItem("sas_user", JSON.stringify(newUser));
+
+    alert("Signup successful! Please log in.");
+    switchToLoginTab();
+    });
+
+    // LOGIN
+    loginBtn.addEventListener("click", () => {
+    const username = loginUser.value.trim();
+    const password = loginPass.value;
 
     if (!username || !password) {
-      alert("Please enter username and password.");
-      return;
+        alert("Please enter username and password.");
+        return;
     }
 
     const stored = localStorage.getItem("sas_user");
     if (!stored) {
-      alert("No account found. Please sign up first.");
-      return;
+        alert("No account found. Please sign up first.");
+        return;
     }
 
-    try {
-      const user = JSON.parse(stored);
-      if (user.username === username && user.password === password) {
+    const user = JSON.parse(stored);
+
+    if (user.username === username && user.password === password) {
         localStorage.setItem("sas_logged_in", "true");
-        showApp(user.username);
-      } else {
+        showApp(user.firstname);
+    } else {
         alert("Invalid username or password.");
-      }
-    } catch {
-      alert("Stored user data corrupted. Please clear localStorage.");
     }
-  });
+    });
 
-  logoutBtn.addEventListener("click", () => {
-    localStorage.removeItem("sas_logged_in");
-    hideElement(appContainer);
-    showElement(authContainer);
-  });
+    // ENTER KEY LOGIN
+    loginPassword.addEventListener("keypress", (e) => {
+    if (e.key === "Enter") loginBtn.click();
+    });
+    loginUsername.addEventListener("keypress", (e) => {
+    if (e.key === "Enter") loginBtn.click();
+    });
 
-  function showApp(username) {
-    welcomeUserSpan.textContent = username || "User";
+    // SHOW APP AFTER LOGIN
+    function showApp(name) {
+    welcomeUserSpan.textContent = name || "User";
     hideElement(authContainer);
     showElement(appContainer);
     loadStories();
-  }
+    }
 
-  // Auto-login if already logged in earlier
-  (function autoLoginIfNeeded() {
+    // AUTO LOGIN
+    (function autoLogin() {
     const loggedIn = localStorage.getItem("sas_logged_in") === "true";
     const stored = localStorage.getItem("sas_user");
     if (loggedIn && stored) {
-      try {
         const user = JSON.parse(stored);
-        showApp(user.username || "User");
-      } catch {
-        // ignore and stay on auth screen
-      }
+        showApp(user.firstname || "User");
     }
-  })();
+    })();
+
 
   /* ------------ APP EVENTS ------------ */
 
