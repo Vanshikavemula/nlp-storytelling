@@ -673,6 +673,16 @@ document.addEventListener("click", () => {
     }
     })();
 
+    // LOGOUT
+    logoutBtn.addEventListener("click", () => {
+      localStorage.removeItem("sas_logged_in");
+      showElement(authContainer);
+      hideElement(appContainer);
+
+      // Optional: clear fields
+      loginUsername.value = "";
+      loginPassword.value = "";
+    });
 
   /* ------------ APP EVENTS ------------ */
 
@@ -681,7 +691,7 @@ document.addEventListener("click", () => {
     clearForm();
     showElement(addStorySection);
     showElement(backArrow);
-    mainHeader.classList.add("hidden");
+    mainHeader.classList.remove("hidden");
     toolbar.classList.add("hidden");
     storiesSection.classList.add("hidden");
     });
